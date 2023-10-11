@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+
+    <title>今天吃什么</title>
+    <meta name="keywords"
+        content="外卖选择,今天吃什么,美食推荐,吃饭推荐,美食选择,吃饭选择,点餐选择工具,点餐选择助手,纠结症选择,选择困难症,随机选择,随机选择器,选择器,抓阄,在线抓阄,抽签,抓阄工具,抓阄软件,抽签工具,抽签软件,摇号,在线摇号,摇号工具,摇号软件,外卖红包">
+    <meta name="description"
+        content="今天吃什么是一个用餐推荐工具，点外卖随机选择器，随机推荐美食，帮助有选择困难症的朋友，在吃饭问题上做好选择，再也不用为今天吃什么发愁了。一个可以实现在线抽签、摇号、抓阄的应用工具。">
+
+    <!--浏览器标签ICO-->
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="bookmark" href="favicon.ico" />
+
+    <link rel="stylesheet" type="text/css" href="static/css/eat-min.css">
+
+</head>
+
+<body>
+    <!-- <div class="logo"><img src="logo.png" /></div> -->
+    <!-- 为什么注释这个logo，因为我觉得太磕碜了 -->
+    <div id="wrapper">
+        <h1 style="color:#FF3D3D" id="what"></h1>
+        <input type="button" value="开始" id="start" />
+        <p>
+            <span id="cfg" title="编辑候选菜单">自定义菜单</span>
+            <a href="javascript:location.reload();" id="cx" style="display: none">原菜单重选</a>
+        </p>
+    </div>
+
+    <div id="popbox-wrapper" style="display: none;">
+        <div id="popbox">
+            <h3>自定义菜单<br><small
+                    style="display:block;color: #666; font-size: 12px; font-weight: 100;margin-top: 3px;">菜名之间要以空格区分</small>
+            </h3>
+            <textarea type="hidden" id="list" name="list"
+                placeholder="输入菜单名称，菜名之间要以空格分隔">馄饨 烩面 热干面 刀削面 油泼面 炸酱面 炒面 重庆小面 米线 酸辣粉 土豆粉 螺狮粉 凉皮儿 麻辣烫 肉夹馍 羊肉泡馍 炒饭 盖浇饭 烤肉饭 黄焖鸡米饭 麻辣香锅 火锅 酸菜鱼 烤串 披萨 烤鸭 汉堡 炸鸡 寿司 煎饼果子 南瓜粥 小龙虾 牛排 砂锅 大排档 馒头 西餐 自助餐 小笼包 水果 西北风 烧烤 泡面 水饺 日本料理 涮羊肉 兰州拉面 肯德基 面包 臊子面 小笼包 麦当劳 沙县小吃 烤鱼 海鲜 铁板烧 韩国料理 甜点 鸭血粉丝汤</textarea>
+            <input type="button" value="确定" id="ok" class="btn btn-primary" />
+        </div>
+    </div>
+
+    <!-- <footer>
+        <div class="copyright">
+            <span class="cp"><a href="" target="_blank">写着玩的</a>我抄的</span>
+        </div>
+    </footer> -->
+
+    <script type='text/javascript' src='static/js/jquery-1.11.1.min.js'></script>
+    <script>
+        $(function () {
+            var run = 0,
+                btn = $("#start"),
+                popup = $("#popbox-wrapper"),
+                li = $("#list"),
+                times = 0,
+                timer;
+
+            $("#start").click(function () {
+                var list = $("#list").val().replace(/ +/g, " ").replace(/^ | $/g, "").split(" ");
+                if (list.length == 1 && list[0] != "") return alert("耍我是吧，一个有什么好选的！");
+                if (list.length == 1) return alert("菜单中啥也没有，吃西北风去啊？");
+                if (!run) {
+                    $("#cfg").add(btn).one("click", function () {
+                        $(".tip").animate({
+                            left: "+=10px",
+                            opacity: 0
+                        }, function () {
+                            $(this).remove();
+                        });
+                    });
+                    $(this).val("停止");
+                    timer = setInterval(function () {
+                        var r = Math.ceil(Math.random() * list.length),
+                            food = list[r - 1];
+                        $("#what").html(food);
+                        var rTop = Math.ceil(Math.random() * $(document).height()),
+                            rLeft = Math.ceil(Math.random() * ($(document).width() - 50)),
+                            rSize = Math.ceil(Math.random() * (37 - 14) + 14);
+                        $("<span class='temp'></span>").html(food).hide().css({
+                            "top": rTop,
+                            "left": rLeft,
+                            "color": "rgba(0,0,0,." + Math.random() + ")",
+                            "fontSize": rSize + "px"
+                        }).appendTo("body").fadeIn("slow", function () {
+                            $(this).fadeOut("slow", function () {
+                                $(this).remove();
+                            });
+                        });
+                    }, 50);
+                    run = 1;
+                } else {
+                    $(this).val("不行，换一个");
+                    clearInterval(timer);
+                    run = 0;
+                };
+            });
+            $("#cfg").click(function () {
+                run ? alert("还在选呢！") : popup.fadeIn(function () {
+                    var t = li.val();
+                    li.focus().val("").val(t)
+                });
+            });
+
+            $("#ok").click(function () {
+                popup.fadeOut();
+            });
+        });
+
+        $i = 0;
+        $('#start').click(function () {
+            $i++;
+            if ($i >= 12) {
+                $('#start').hide();
+                $('#what').html('这么挑？饿着吧！');
+                $('#cfg').hide();
+                $('#cx').show();
+            };
+        })
+    </script>
+
+
+</body>
+
+</html>
